@@ -8,6 +8,7 @@
 #include <ros/ros.h>
 #include <reef_msgs/DesiredState.h>
 #include <reef_msgs/XYZEstimate.h>
+#include <rosflight_msgs/AddedTorque.h>
 #include <geometry_msgs/Vector3Stamped.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/Float64.h>
@@ -30,7 +31,7 @@ public:
         StatusSub = n.subscribe("adapt_on", 100, &AdaptiveIO::statusCallback, this);
         GainSub = n.subscribe("adaptive_gain", 1000, &AdaptiveIO::gainCallback, this);
 
-        MRAC_Publisher = n.advertise<geometry_msgs::Vector3Stamped>("added_torque", 40);
+        MRAC_Publisher = n.advertise<rosflight_msgs::AddedTorque>("added_torque", 40);
         ROS_INFO("ADAPTIVE_NODE: set publishers and subscribers");
 
         func_ = boost::bind(&AdaptiveIO::gainsCallback, this, _1, _2);
@@ -47,9 +48,8 @@ public:
         StatusSub = n.subscribe("enable_adaptation", 100, &AdaptiveIO::statusCallback, this);
         GainSub = n.subscribe("adaptive_gain", 1000, &AdaptiveIO::gainCallback, this);
 
-        MRAC_Publisher = n.advertise<geometry_msgs::Vector3Stamped>("added_torque", 40);
+        MRAC_Publisher = n.advertise<rosflight_msgs::AddedTorque>("added_torque", 40);
         ROS_INFO("ADAPTIVE_NODE: set publishers and subscribers");
-        ROS_WARN_STREAM("IM IN THIS CONSTRUCTOR");
         func_ = boost::bind(&AdaptiveIO::gainsCallback, this, _1, _2);
         server_.setCallback(func_);
 
@@ -78,13 +78,10 @@ public:
             double adaptive_pitch_torque = (-1) * x_ctrl.GetAdaptiveTorque();
             double adaptive_roll_torque = y_ctrl.GetAdaptiveTorque();
 
-            //ROS_INFO("ADAPTIVE_NODE: adaptive_pitch_torque = %f, adaptive_roll_torque = %f",
-                    //adaptive_pitch_torque, adaptive_roll_torque);
-
             msg.header.stamp = ros::Time::now();
-            msg.vector.x = adaptive_roll_torque;
-            msg.vector.y = adaptive_pitch_torque;
-            msg.vector.z = 0.0;
+            msg.x = adaptive_roll_torque;
+            msg.y = adaptive_pitch_torque;
+            msg.z = 0.0;
 
             MRAC_Publisher.publish(msg);
         }
@@ -144,7 +141,7 @@ private:
     ros::NodeHandle n;
     ros::NodeHandle n_private;
 
-    geometry_msgs::Vector3Stamped msg;
+    rosflight_msgs::AddedTorque msg;
 
     AdaptiveController x_ctrl;
     AdaptiveController y_ctrl;
