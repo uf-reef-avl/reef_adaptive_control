@@ -1,0 +1,23 @@
+reef_control: {
+    kp: 0.8, deadzone: 0.1, max_vel: 1.5, #params for sigmoid
+    center_point: 1.0, alpha: 0.4, #params for sigmoid
+    uP: 0.34, uI: 0.01, uD: 0.01, #body_frame x velocity
+    vP: 0.42, vI: 0.0, vD: 0.015, #body_frame y velocity
+    wP: 0.3, wI: 0.0, wD: 0.005, uvtau: 0.15, #body_frame z velocity
+    dP: 0.7, dI: 0.02, dD: 0.06, nedtau: 0.15, #body_frame z
+    yawP: 1.08, yawI: 0.08, yawD: 0.01, yawtau: 0.15, #yaw
+    xIntegrator: 1,
+    uIntegrator: 1,
+
+    max_roll: 0.25,
+    max_pitch: 0.25,
+    max_yaw_rate: 2.0,
+    max_u: 1.0,
+    max_v: 1.0,
+    max_w: 1.0,
+    max_d: 1.0
+
+}
+face_target: true
+fly_fixed_wing: false
+gaussian_offset: 0.0
