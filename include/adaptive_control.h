@@ -247,7 +247,7 @@ private:
 
     bool enableAdaptation = false;
     bool isInitialized = false;
-    double adaptiveGain = 0.001;
+    double adaptiveGain = 0.00001;
 
     // Vector for plant output
     Eigen::VectorXd Yp;

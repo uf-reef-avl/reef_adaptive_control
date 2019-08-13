@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 
     numerator.setZero(3);
     denominator.setZero(4);
-
+    // 45 + 51s + 12s^2 comes from simulation (evaluating the root locus)
     numerator << 45, 51, 12;
     denominator << 45, 54, 14.4, 1;
     ROS_INFO("ADAPTIVE_NODE: set values of numerator and denominator");
