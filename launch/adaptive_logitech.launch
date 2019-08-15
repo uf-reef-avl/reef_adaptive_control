@@ -14,16 +14,16 @@
         <param name="port" value="/dev/ttyUSB0"/>
     </node>
 
-<!--    <include file="$(find reef_teleop)/launch/logitech_controller.launch">-->
-<!--        <arg name="control_mode" value="$(arg control_mode)"/>-->
-<!--        <arg name="initial_z_cmd" value="-1.0"/>-->
-<!--        <arg name="min_z_cmd" value="-3.0"/>-->
-<!--        <arg name="max_z_cmd" value="0.0"/>-->
-<!--        <arg name="invert_x" value="false"/>-->
-<!--        <arg name="x_dot_max" default="1.00"/>-->
-<!--        <arg name="y_dot_max" default="1.00"/>-->
-<!--        <arg name="yawrate_max" default="1.57"/>-->
-<!--    </include>-->
+   <include file="$(find reef_teleop)/launch/logitech_controller.launch">-->
+       <arg name="control_mode" value="$(arg control_mode)"/>
+       <arg name="initial_z_cmd" value="-1.0"/>
+       <arg name="min_z_cmd" value="-3.0"/>
+       <arg name="max_z_cmd" value="0.0"/>
+       <arg name="invert_x" value="false"/>
+       <arg name="x_dot_max" default="1.00"/>
+       <arg name="y_dot_max" default="1.00"/>
+       <arg name="yawrate_max" default="1.57"/>
+  </include>
 
     <rosparam command="load" file="$(find reef_estimator)/params/$(arg vehicle)_camera.yaml" />
 
