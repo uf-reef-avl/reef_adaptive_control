@@ -12,6 +12,7 @@
 
 #include <reef_msgs/XYZEstimate.h>
 #include <reef_msgs/DesiredState.h>
+#include <relative_nav/FilterState.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <std_msgs/Bool.h>
 #include <nav_msgs/Odometry.h>
@@ -43,6 +44,7 @@ namespace reef_control
 
     ros::Subscriber status_subscriber_;
     ros::Subscriber current_state_subcriber_;
+    ros::Subscriber rmekf_state_subcriber_;
     ros::Subscriber desired_state_subcriber_;
     ros::Subscriber is_flying_subcriber_;
     ros::Subscriber pose_subcriber_;
@@ -66,6 +68,7 @@ namespace reef_control
     Eigen::Vector3d accel_out;
 
     void currentStateCallback(const reef_msgs::XYZEstimate& msg);
+    void rmekfStateCallback(const relative_nav::FilterState& msg);
     void desiredStateCallback(const reef_msgs::DesiredState& msg);
     void poseCallback(const geometry_msgs::PoseStamped& msg);
     void isflyingCallback(const std_msgs::Bool& msg);

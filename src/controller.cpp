@@ -20,6 +20,7 @@ namespace reef_control
     status_subscriber_       = nh_.subscribe("status",1,&Controller::statusCallback,this);
     is_flying_subcriber_     = nh_.subscribe("is_flying",1, &Controller::isflyingCallback,this);
     current_state_subcriber_ = nh_.subscribe("xyz_estimate", 1, &Controller::currentStateCallback,this);
+      rmekf_state_subcriber_ = nh_.subscribe("relative_state", 1, &Controller::currentStateCallback,this);
     rc_in_subcriber_         = nh_.subscribe("rc_raw",1,&Controller::RCInCallback,this);
     pose_subcriber_          = nh_.subscribe("pose_stamped", 1, &Controller::poseCallback,this);
 
@@ -41,6 +42,16 @@ namespace reef_control
     current_state_.pose.pose.position.z = msg.z_plus.z;
     computeCommand();
   }
+
+    void Controller::rmekfStateCallback(const relative_nav::FilterState& msg)
+    {
+        current_state_.header = msg.header;
+        current_state_.twist.twist.linear.x = msg.velocity.x;
+        current_state_.twist.twist.linear.y = msg.velocity.y;
+        current_state_.twist.twist.linear.z = msg.velocity.z;
+        current_state_.pose.pose.position.z = msg.transform.translation.z;
+        computeCommand();
+    }
 
   void Controller::poseCallback(const geometry_msgs::PoseStamped& msg)
   {

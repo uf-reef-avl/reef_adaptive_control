@@ -46,7 +46,7 @@ public:
     {
         DesiredStateSub = n.subscribe("desired_state", 100, &AdaptiveIO::desiredStateCallback, this);
         CurrentStateSub = n.subscribe("xyz_estimate", 100, &AdaptiveIO::currentStateCallback, this);
-        rmekf_state_sub = n.subscribe("relative_nav", 100, &AdaptiveIO::rmekfStateCallback, this);
+        rmekf_state_sub = n.subscribe("relative_state", 100, &AdaptiveIO::rmekfStateCallback, this);
         PlantTorqueSub = n.subscribe("total_torque", 100, &AdaptiveIO::plantTorqueCallback, this);
         StatusSub = n.subscribe("enable_adaptation", 100, &AdaptiveIO::statusCallback, this);
         GainSub = n.subscribe("adaptive_gain", 1000, &AdaptiveIO::gainCallback, this);
