@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rosflight_msgs
   rospy
+        relative_nav
 )
 
 find_package(Eigen REQUIRED)

@@ -68,7 +68,7 @@
     <rosparam command="load" file="$(find demo_rgbd)/params/kiwi_camera.yaml" />
     <include file="$(find demo_rgbd)/launch/demo_rgbd.launch"/>
 
-    </group>
+ </group>
 
 
     <rosparam file="$(find reef_adaptive_control)/params/$(arg vehicle_type)_pid.yaml" />

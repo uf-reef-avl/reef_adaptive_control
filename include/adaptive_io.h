@@ -9,6 +9,7 @@
 #include <reef_msgs/DesiredState.h>
 #include <reef_msgs/XYZEstimate.h>
 #include <rosflight_msgs/AddedTorque.h>
+#include <relative_nav/FilterState.h>
 #include <geometry_msgs/Vector3Stamped.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/Float64.h>
@@ -27,6 +28,7 @@ public:
     {
         DesiredStateSub = n.subscribe("desired_state", 100, &AdaptiveIO::desiredStateCallback, this);
         CurrentStateSub = n.subscribe("xyz_estimate", 100, &AdaptiveIO::currentStateCallback, this);
+        rmekf_state_sub = n.subscribe("relative_nav", 100, &AdaptiveIO::rmekfStateCallback, this);
         PlantTorqueSub = n.subscribe("total_torque", 100, &AdaptiveIO::plantTorqueCallback, this);
         StatusSub = n.subscribe("adapt_on", 100, &AdaptiveIO::statusCallback, this);
         GainSub = n.subscribe("adaptive_gain", 1000, &AdaptiveIO::gainCallback, this);
@@ -44,6 +46,7 @@ public:
     {
         DesiredStateSub = n.subscribe("desired_state", 100, &AdaptiveIO::desiredStateCallback, this);
         CurrentStateSub = n.subscribe("xyz_estimate", 100, &AdaptiveIO::currentStateCallback, this);
+        rmekf_state_sub = n.subscribe("relative_nav", 100, &AdaptiveIO::rmekfStateCallback, this);
         PlantTorqueSub = n.subscribe("total_torque", 100, &AdaptiveIO::plantTorqueCallback, this);
         StatusSub = n.subscribe("enable_adaptation", 100, &AdaptiveIO::statusCallback, this);
         GainSub = n.subscribe("adaptive_gain", 1000, &AdaptiveIO::gainCallback, this);
@@ -131,6 +134,7 @@ private:
 
     ros::Subscriber DesiredStateSub;
     ros::Subscriber CurrentStateSub;
+    ros::Subscriber rmekf_state_sub;
     ros::Subscriber PlantTorqueSub;
     ros::Subscriber StatusSub;
     ros::Subscriber GainSub;
@@ -187,6 +191,37 @@ private:
         }
         // Update input time for next iteration
         last_input_time_r = input_time_r;
+    }
+
+    void rmekfStateCallback(const relative_nav::FilterState &msg){
+
+        // Update time
+        input_time_yp = double(msg.header.stamp.nsec);
+
+        // At start, discard the delta time because it has no prior measurement
+        if (last_input_time_yp == 0)
+        {
+            (last_input_time_yp = input_time_yp);
+        }
+
+        // Assign delta t as the difference in times (value given in seconds)
+        double delta_t = (input_time_yp - last_input_time_yp) * 1e-9;
+
+        // Test if delta_t is positive and nonzero
+        if (delta_t > 0.0)
+        {
+            double x_vel = msg.velocity.x;
+            double y_vel = msg.velocity.y;
+
+            //ROS_INFO("ADAPTIVE_NODE: x_vel = %f, y_vel = %f", x_vel, y_vel);
+
+            // Update adaptive controller parameters from input data
+            x_ctrl.UpdatePlantOutput(x_vel, delta_t);
+            y_ctrl.UpdatePlantOutput(y_vel, delta_t);
+        }
+        // Update input time for next iteration
+        last_input_time_yp = input_time_yp;
+
     }
 
     // callback function for current state estimate
