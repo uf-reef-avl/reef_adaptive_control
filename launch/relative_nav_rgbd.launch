@@ -1,7 +1,7 @@
 <launch>
 
     <arg name="vehicle"        default="wren"/>    <!-- name of the vehicle, determines which sets of parameters and gains to load -->
-    <arg name="run_rgbd"       default="false"/>  <!-- run the RGB-D camera driver and visual odometry -->
+    <arg name="run_rgbd"       default="true"/>  <!-- run the RGB-D camera driver and visual odometry -->
     <arg name="run_controller" default="true"/> <!-- run the velocity controller -->
     <arg name="run_backend" default="false"/>
     <arg name="record_bag" default="false"/>
@@ -30,6 +30,15 @@
         <arg name="max_yaw"                       default="0.35"/>
         <arg name="vo_out_rate"                   default="30"/>
 
+        <!-- RGB-D camera and visual odometry -->
+        <group if="$(arg run_rgbd)">
+            <include file="$(find backend_optimzation)/launch/test_vo.launch"> 
+                <arg name="max_translation" value="$(arg max_translation)"/>
+                <arg name="max_yaw"         value="$(arg max_yaw)"/>
+            </include>      
+        </group>
+
+        
         <node pkg="vo_sim" name="$(arg vo_name)_node" type="vo_sim_node" output="screen">
             <remap from="vo_out" to="$(arg vo_name)" />
             <remap from="altimeter" to="sonar" />
@@ -40,7 +49,7 @@
             <param name="max_translation" value="$(arg max_translation)"/>
             <param name="max_yaw"         value="$(arg max_yaw)"/>
         </node>
-
+        
         <!-- informs the estimator when the vehicle has actually lifted off -->
         <node name="start_trigger" pkg="rmekf" type="start_trigger.py"/>
 
