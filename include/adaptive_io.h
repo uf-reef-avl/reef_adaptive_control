@@ -178,7 +178,7 @@ private:
         double delta_t = (input_time_r - last_input_time_r) * 1e-9;
 
         // Test if delta_t is positive and nonzero
-        if (delta_t > 0.0)
+        if (delta_t > 0.0 && msg.velocity_valid)
         {
             double x_desired_vel = msg.velocity.x;
             double y_desired_vel = msg.velocity.y;
