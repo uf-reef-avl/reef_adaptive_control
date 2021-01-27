@@ -26,7 +26,7 @@ public:
     // Constructor creates publishers and subscribers
     AdaptiveIO() : n(""), n_private("~")
     {
-        DesiredStateSub = n.subscribe("desired_state", 100, &AdaptiveIO::desiredStateCallback, this);
+        DesiredStateSub = n.subscribe("controller_state", 100, &AdaptiveIO::desiredStateCallback, this);
         CurrentStateSub = n.subscribe("xyz_estimate", 100, &AdaptiveIO::currentStateCallback, this);
         rmekf_state_sub = n.subscribe("relative_nav", 100, &AdaptiveIO::rmekfStateCallback, this);
         PlantTorqueSub = n.subscribe("total_torque", 100, &AdaptiveIO::plantTorqueCallback, this);
