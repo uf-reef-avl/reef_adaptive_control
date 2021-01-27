@@ -39,7 +39,6 @@ namespace reef_control
     double gaussian_offset_;
     double theta;
     bool face_target_;
-    bool fly_fixed_wing_;
 
     ros::Publisher desired_state_pub_;
 

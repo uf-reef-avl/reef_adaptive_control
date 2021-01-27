@@ -31,6 +31,7 @@ namespace reef_control
     bool initialized_;
     ros::NodeHandle nh_;
     ros::NodeHandle nh_private_;
+      bool fly_fixed_wing_;
 
    private:
     bool is_flying_;                       // Set by is_flying callback
