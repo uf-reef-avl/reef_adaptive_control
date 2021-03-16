@@ -13,6 +13,9 @@ namespace reef_control
 
     // Get Global Parameters
     nh_.param<double>("gravity", gravity_, 9.80665);
+    ROS_ASSERT_MSG(nh_private_.getParam("max_roll", max_roll_), "[rotor_controller] - missing parameters");
+    ROS_ASSERT(nh_private_.getParam("max_pitch", max_pitch_));
+    ROS_ASSERT(nh_private_.getParam("max_yaw_rate", max_yaw_rate_));
 
     command_publisher_       = nh_.advertise<rosflight_msgs::Command>("command", 1);
 
@@ -104,7 +107,7 @@ namespace reef_control
     command.mode = rosflight_msgs::Command::MODE_ROLL_PITCH_YAWRATE_THROTTLE;
     command.F = std::min(std::max(thrust, 0.0), 1.0);
     if(!desired_state_.attitude_valid && !desired_state_.altitude_only) {
-      command.ignore = 0x00;
+	command.ignore = 0x00;
       command.x = std::min(std::max(phi_desired, -1.0 * max_roll_), max_roll_);
       command.y = std::min(std::max(theta_desired, -1.0 * max_pitch_), max_pitch_);
       command.z = std::min(std::max(desired_state_.velocity.yaw, -1.0 * max_yaw_rate_), max_yaw_rate_);

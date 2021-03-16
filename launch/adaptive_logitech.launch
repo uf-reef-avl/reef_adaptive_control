@@ -1,6 +1,6 @@
 <launch>
 
-    <arg name="vehicle" default="rhea"/>
+    <arg name="vehicle" default="wren"/>
     <arg name="vehicle_type" default="quad"/>
     <arg name="run_estimator" default="true"/>
     <arg name="run_uncc" default="false"/>
