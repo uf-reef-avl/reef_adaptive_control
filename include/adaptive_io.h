@@ -25,7 +25,7 @@ public:
     // Constructor creates publishers and subscribers
     AdaptiveIO() : n(""), n_private("~")
     {
-        DesiredStateSub = n.subscribe("desired_state", 100, &AdaptiveIO::desiredStateCallback, this);
+        DesiredStateSub = n.subscribe("controller_state", 100, &AdaptiveIO::desiredStateCallback, this);
         CurrentStateSub = n.subscribe("xyz_estimate", 100, &AdaptiveIO::currentStateCallback, this);
         PlantTorqueSub = n.subscribe("total_torque", 100, &AdaptiveIO::plantTorqueCallback, this);
         StatusSub = n.subscribe("adapt_on", 100, &AdaptiveIO::statusCallback, this);
@@ -42,7 +42,7 @@ public:
     // Single-argument constructor creates pubs and subs, and adaptive controllers as well
     AdaptiveIO(TransferFunction ModelTF) : n(""), n_private("~")
     {
-        DesiredStateSub = n.subscribe("desired_state", 100, &AdaptiveIO::desiredStateCallback, this);
+        DesiredStateSub = n.subscribe("controller_state", 100, &AdaptiveIO::desiredStateCallback, this);
         CurrentStateSub = n.subscribe("xyz_estimate", 100, &AdaptiveIO::currentStateCallback, this);
         PlantTorqueSub = n.subscribe("total_torque", 100, &AdaptiveIO::plantTorqueCallback, this);
         StatusSub = n.subscribe("enable_adaptation", 100, &AdaptiveIO::statusCallback, this);
