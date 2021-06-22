@@ -17,6 +17,10 @@ namespace reef_control
     ROS_ASSERT(nh_private_.getParam("max_pitch", max_pitch_));
     ROS_ASSERT(nh_private_.getParam("max_yaw_rate", max_yaw_rate_));
 
+      max_yaw_rate_=0.785;
+      max_roll_ = 0.25;
+      max_pitch_ = 0.25;
+
     command_publisher_       = nh_.advertise<rosflight_msgs::Command>("command", 1);
 
     desired_state_subcriber_ = nh_.subscribe("desired_state",1,&Controller::desiredStateCallback,this);
@@ -79,7 +83,7 @@ namespace reef_control
     {
       // Don't do anything if dt is really close (or equal to) zero
       return;
-    }
+    }   
 
     computeCommand(current_state_ ,desired_state_,dt);
 

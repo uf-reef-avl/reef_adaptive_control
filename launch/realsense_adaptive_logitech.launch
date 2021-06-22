@@ -1,0 +1,70 @@
+<launch>
+
+    <arg name="vehicle" default="ace"/>
+    <arg name="vehicle_type" default="quad"/>
+    <arg name="run_estimator" default="true"/>
+    <arg name="run_rgbd" default="true"/>
+
+    <arg name="control_mode" value="velocity_altitude"/>
+    <arg name="record_bag" default="true"/>
+    <arg name="bag_name" default="test"/>
+
+    <node name="rosflight" pkg="rosflight" type="rosflight_io" output="screen">
+        <param name="port" value="/dev/ttyUSB0"/>
+    </node>
+
+   <include file="$(find reef_teleop)/launch/logitech_controller.launch">-->
+       <arg name="control_mode" value="$(arg control_mode)"/>
+       <arg name="initial_z_cmd" value="-1.0"/>
+       <arg name="min_z_cmd" value="-3.0"/>
+       <arg name="max_z_cmd" value="0.0"/>
+       <arg name="invert_x" value="false"/>
+       <arg name="x_dot_max" default="1.00"/>
+       <arg name="y_dot_max" default="1.00"/>
+       <arg name="yawrate_max" default="1.57"/>
+  </include>
+
+    <rosparam command="load" file="$(find reef_estimator)/params/$(arg vehicle)_camera.yaml" />
+
+
+    <node if="$(arg run_estimator)" name="reef_estimator" pkg="reef_estimator" type="reef_estimator" output="log">
+        <rosparam file="$(find reef_estimator)/params/xy_est_params.yaml" />
+        <rosparam file="$(find reef_estimator)/params/z_est_params.yaml" />
+        <rosparam file="$(find reef_estimator)/params/basic_params.yaml" />
+        <rosparam>
+            enable_rgbd: true
+            enable_sonar: true
+            enable_mocap_xy: false
+            enable_mocap_z: false
+        </rosparam>
+        <remap from="rgbd_velocity_body_frame" to="rgbd_to_velocity/body_level_frame"/>
+    </node>
+
+    <group if="$(arg run_rgbd)">
+        <include file="$(find realsense2_camera)/launch/rs_rgbd.launch"/>
+
+        <group ns="dvo_vis">
+            <node pkg="dvo_ros" type="camera_tracker" name="camera_tracker" output="screen">
+                <remap from="/camera/depth_registered/camera_info" to="/camera/aligned_depth_to_color/camera_info"/>
+                <remap from="/camera/depth_registered/input_image" to="/camera/aligned_depth_to_color/image_raw"/>
+                <remap from="/camera/rgb/camera_info" to="/camera/color/camera_info"/>
+                <remap from="/camera/rgb/input_image" to="/camera/color/image_raw"/>
+            </node>
+        </group>
+
+        <node name="rgbd_to_velocity" pkg="rgbd_to_velocity" type="rgbd_to_velocity" output="screen">
+            <rosparam command="load" file="$(find rgbd_to_velocity)/params/rgbd_to_velocity_params.yaml" />
+            <rosparam command="load" file="$(find rgbd_to_velocity)/params/kiwi_camera.yaml" />
+            <remap from="dvo_pose" to="dvo_vis/rgbd/pose"/>
+        </node>
+    </group>
+
+    <rosparam file="$(find reef_adaptive_control)/params/$(arg vehicle_type)_pid.yaml" />
+    <node name="reef_control_pid" pkg="reef_adaptive_control" type="pid_control_node" output="screen"/>
+    <node name="reef_control_adaptive" pkg="reef_adaptive_control" type="adaptive_node" output="screen">
+        <rosparam file="$(find reef_adaptive_control)/params/adaptive_gains.yaml"/>
+    </node>
+
+    <node if="$(arg record_bag)" name="record" pkg="rosbag" type="record" args="-O $(arg bag_name) dvo_vis/rgbd/pose attitude attitude/euler rc_raw imu/data sonar status pose_stamped xyz_debug_estimate xyz_estimate velocity/body_level_frame controller_state xyz_debug_estimate rgbd_velocity/body_level_frame sonar"/>
+
+</launch>
