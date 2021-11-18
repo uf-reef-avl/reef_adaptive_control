@@ -3,7 +3,7 @@
     <arg name="vehicle" default="ace"/>
     <arg name="vehicle_type" default="quad"/>
     <arg name="run_estimator" default="true"/>
-    <arg name="run_rgbd" default="true"/>
+    <arg name="run_rgbd" default="false"/>
 
     <arg name="control_mode" value="velocity_altitude"/>
     <arg name="record_bag" default="true"/>
@@ -34,10 +34,18 @@
         <rosparam>
             enable_rgbd: true
             enable_sonar: true
-            enable_mocap_xy: false
-            enable_mocap_z: false
+            enable_mocap_xy: true
+            enable_mocap_z: true
         </rosparam>
         <remap from="rgbd_velocity_body_frame" to="rgbd_to_velocity/body_level_frame"/>
+    </node>
+
+    <node pkg="ros_vrpn_client" name="$(arg vehicle)" type="ros_vrpn_client" args="_vrpn_server_ip:=192.168.1.104" required="true" output="screen">
+        <remap from="$(arg vehicle)/ned/pose_stamped" to="pose_stamped"/>
+    </node>
+
+    <node name="pose_to_vel" pkg="position_to_velocity" type="position_to_velocity_node" output="log" >
+        <rosparam command="load" file="$(find position_to_velocity)/params/basic.yaml" />
     </node>
 
     <group if="$(arg run_rgbd)">
